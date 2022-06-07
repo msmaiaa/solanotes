@@ -10,9 +10,9 @@ describe("solanotes", () => {
 
   const program = anchor.workspace.Solanotes as Program<Solanotes>;
 
-  it("Initialized", async () => {
+  const initialize = async () => {
     const baseAccount = anchor.web3.Keypair.generate();
-    const tx = await program.rpc.initialize({
+    await program.rpc.initialize({
       accounts: {
         baseAccount: baseAccount.publicKey,
         user: provider.wallet.publicKey,
@@ -20,9 +20,33 @@ describe("solanotes", () => {
       },
       signers: [baseAccount],
     });
+    return baseAccount;
+  };
+
+  it("should initialize the account", async () => {
+    const baseAccount = await initialize();
     let account = await program.account.baseAccount.fetch(
       baseAccount.publicKey
     );
-    console.log("note count:", account.totalNotes);
+    expect(account.notes).to.eql([]);
+    expect(account.totalNotes).to.eql(0);
+  });
+  it("should create a note", async () => {
+    const baseAccount = await initialize();
+    await program.rpc.createNote("hello world", "this is a cool note body", {
+      accounts: {
+        baseAccount: baseAccount.publicKey,
+        user: provider.wallet.publicKey,
+      },
+    });
+    let account = await program.account.baseAccount.fetch(
+      baseAccount.publicKey
+    );
+    const { userAddress, ...note } = account.notes[0];
+    expect(account.totalNotes).to.eql(1);
+    expect(note).to.eql({
+      title: "hello world",
+      body: "this is a cool note body",
+    });
   });
 });
