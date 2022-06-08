@@ -66,7 +66,7 @@ textarea {
 }
 
 .note__container {
-	min-height: 120px;
+	min-height: 40px;
 	width: 350px;
 	border: 1px solid rgb(34, 48, 32);
 	padding: 12px 12px;
