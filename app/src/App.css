@@ -47,6 +47,7 @@ textarea {
 	margin-top: 14px;
 	color: rgb(21, 255, 0);
 	background-color: rgb(24, 24, 24);
+	margin-bottom: 48px;
 }
 
 #form__submit-btn:hover {
@@ -62,4 +63,29 @@ textarea {
 	color: rgb(21, 255, 0);
 	font-size: 20px;
 	margin-bottom: 4px;
+}
+
+.note__container {
+	min-height: 120px;
+	width: 350px;
+	border: 1px solid rgb(34, 48, 32);
+	padding: 12px 12px;
+	box-sizing: border-box;
+}
+
+.note__container:not(:first-of-type) {
+	margin-top: 24px;
+}
+
+.note__title {
+	color: rgb(11, 133, 0);
+	font-size: 20px;
+	margin-bottom: 4px;
+	font-style: italic;
+}
+
+.note__body {
+	color: rgb(8, 100, 0);
+	font-size: 14px;
+	margin-top: 8px;
 }

@@ -125,34 +125,44 @@ function App() {
       );
     }
     return (
-      <form onSubmit={createNote} className="form" autoComplete="off">
-        <div className="input__container">
-          <label htmlFor="form__title" className="input__label">
-            Title
-          </label>
-          <input
-            value={noteTitle}
-            type="text"
-            onChange={(e) => setNoteTitle(e.target.value)}
-            id="form__title"
-            className="form__field"
-          />
-        </div>
-        <div className="input__container">
-          <label htmlFor="form__body" className="input__label">
-            Body
-          </label>
-          <textarea
-            value={noteBody}
-            onChange={(e) => setNoteBody(e.target.value)}
-            id="form__body"
-            className="form__field"
-          />
-        </div>
-        <button type="submit" id="form__submit-btn">
-          Send
-        </button>
-      </form>
+      <>
+        <form onSubmit={createNote} className="form" autoComplete="off">
+          <div className="input__container">
+            <label htmlFor="form__title" className="input__label">
+              Title
+            </label>
+            <input
+              value={noteTitle}
+              type="text"
+              onChange={(e) => setNoteTitle(e.target.value)}
+              id="form__title"
+              className="form__field"
+            />
+          </div>
+          <div className="input__container">
+            <label htmlFor="form__body" className="input__label">
+              Body
+            </label>
+            <textarea
+              value={noteBody}
+              onChange={(e) => setNoteBody(e.target.value)}
+              id="form__body"
+              className="form__field"
+            />
+          </div>
+          <button type="submit" id="form__submit-btn">
+            Send
+          </button>
+        </form>
+        {noteList.map((note) => {
+          return (
+            <div key={note.title} className="note__container">
+              <h3 className="note__title">{note.title}</h3>
+              <p className="note__body">{note.body}</p>
+            </div>
+          );
+        })}
+      </>
     );
   };
 
