@@ -23,7 +23,7 @@ textarea {
 
 .form__field {
 	display: inline-block;	
-  color: rgb(21, 255, 0);
+  color: rgb(8, 100, 0);
   padding: 10px;
   height: 34px;
 	width: 350px;
@@ -45,7 +45,7 @@ textarea {
 	font-size: 16px;
 	padding: 8px 18px;
 	margin-top: 14px;
-	color: rgb(21, 255, 0);
+	color: rgb(14, 168, 0);
 	background-color: rgb(24, 24, 24);
 	margin-bottom: 48px;
 }
@@ -60,7 +60,7 @@ textarea {
 }
 
 .input__label {
-	color: rgb(21, 255, 0);
+	color: rgb(14, 168, 0);
 	font-size: 20px;
 	margin-bottom: 4px;
 }

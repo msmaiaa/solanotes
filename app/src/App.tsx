@@ -1,9 +1,13 @@
-import { Idl, Program, AnchorProvider, web3 } from "@project-serum/anchor";
-import { useEffect, useState } from "react";
-import keypair from "./keypair.json";
-import idl from "./idl.json";
-import "./App.css";
+import { AnchorProvider, Idl, Program, web3 } from "@project-serum/anchor";
 import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
+import { useEffect, useState } from "react";
+import { Note, WindowWithSolana } from "./types";
+import CreateNoteForm from "./components/CreateNoteForm";
+import NoteCard from "./components/Note";
+import "./App.css";
+import idl from "./idl.json";
+import keypair from "./keypair.json";
+import { Wallet } from "@project-serum/anchor/dist/cjs/provider";
 
 const { SystemProgram } = web3;
 
@@ -13,40 +17,35 @@ const baseAccount = web3.Keypair.fromSecretKey(secret);
 
 const programId = new PublicKey(idl.metadata.address);
 
-const network = clusterApiUrl("devnet");
-
-type Note = {
-  title: string;
-  body: string;
-};
+const network = clusterApiUrl(import.meta.env.CLUSTER_URL);
 
 function App() {
-  const [noteTitle, setNoteTitle] = useState("");
-  const [noteBody, setNoteBody] = useState("");
-
   const [userWallet, setUserWallet] = useState("");
   const [noteList, setNoteList] = useState<Array<Note> | null>([]);
 
   const checkWalletConnection = async () => {
     try {
-      const { solana }: any = window;
-      if (solana) {
-        if (solana.isPhantom) {
-          const response = await solana.connect({ onlyIfTruste: true });
-          setUserWallet(response.publicKey.toString());
-        } else {
-          alert("Phantom wallet not found");
-        }
-      } else {
-        alert("Solana wallet not found");
+      const { solana } = window as WindowWithSolana;
+      if (!solana) {
+        alert("Solana object not found");
+        return;
       }
-    } catch (_) {}
+      if (!solana.isPhantom) {
+        alert("Phantom wallet not found");
+        return;
+      }
+
+      const response = await solana.connect({ onlyIfTrusted: true });
+      setUserWallet(response.publicKey.toString());
+    } catch (e) {
+      console.error("Error connecting to wallet", e);
+    }
   };
 
   const getProvider = () => {
-    const { solana }: any = window;
+    const { solana } = window as WindowWithSolana;
     const connection = new Connection(network, "processed");
-    const provider = new AnchorProvider(connection, solana, {
+    const provider = new AnchorProvider(connection, solana as Wallet, {
       preflightCommitment: "processed",
     });
     return provider;
@@ -70,20 +69,16 @@ function App() {
     }
   };
 
-  const createNote = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!noteTitle || !noteBody) return;
+  const createNote = async (title: string, body: string) => {
     try {
       const provider = getProvider();
       const program = new Program(idl as Idl, programId, provider);
-      await program.rpc.createNote(noteTitle, noteBody, {
+      await program.rpc.createNote(title, body, {
         accounts: {
           baseAccount: baseAccount.publicKey,
           user: provider.wallet.publicKey,
         },
       });
-      setNoteTitle("");
-      setNoteBody("");
       fetchNotes();
     } catch (e) {
       console.error(e);
@@ -119,49 +114,16 @@ function App() {
   const renderWalletConnected = () => {
     if (!noteList) {
       return (
-        <button onClick={() => createNoteAccount()}>
+        <button onClick={createNoteAccount}>
           click here for the one-time account creation
         </button>
       );
     }
     return (
       <>
-        <form onSubmit={createNote} className="form" autoComplete="off">
-          <div className="input__container">
-            <label htmlFor="form__title" className="input__label">
-              Title
-            </label>
-            <input
-              value={noteTitle}
-              type="text"
-              onChange={(e) => setNoteTitle(e.target.value)}
-              id="form__title"
-              className="form__field"
-            />
-          </div>
-          <div className="input__container">
-            <label htmlFor="form__body" className="input__label">
-              Body
-            </label>
-            <textarea
-              value={noteBody}
-              onChange={(e) => setNoteBody(e.target.value)}
-              id="form__body"
-              className="form__field"
-            />
-          </div>
-          <button type="submit" id="form__submit-btn">
-            Send
-          </button>
-        </form>
-        {noteList.map((note) => {
-          return (
-            <div key={note.title} className="note__container">
-              <h3 className="note__title">{note.title}</h3>
-              <p className="note__body">{note.body}</p>
-            </div>
-          );
-        })}
+        {noteList.map((note) => (
+          <NoteCard data={note} key={note.title} />
+        ))}
       </>
     );
   };
@@ -171,6 +133,7 @@ function App() {
   };
   return (
     <div className="page">
+      <CreateNoteForm onSubmit={createNote} />
       {userWallet ? renderWalletConnected() : renderWalletDisconnected()}
     </div>
   );

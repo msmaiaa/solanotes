@@ -7,7 +7,7 @@ solanotes = "BkdhfUz2R7hhvt9PVoTbS8zGf3ztPHhDDGFm4zPrwuvV"
 url = "https://anchor.projectserum.com"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "/home/matheus/.config/solana/id.json"
 
 [scripts]
